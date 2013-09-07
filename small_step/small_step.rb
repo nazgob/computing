@@ -61,3 +61,19 @@ class Multiply < Struct.new(:left, :right)
     left * right
   end
 end
+
+class Machine < Struct.new(:expression)
+  def run
+    while expression.reducible?
+      # puts expression
+      step
+    end
+    expression
+  end
+
+  private
+  def step
+    self.expression = expression.reduce
+  end
+
+end
