@@ -13,6 +13,7 @@ describe 'binary' do
   let(:four) { Number.new(4) }
   let(:six) { Number.new(6) }
   let(:seven) { Number.new(7) }
+  let(:eight) { Number.new(8) }
 
   describe Add do
     subject { Add.new(two, four) }
@@ -36,5 +37,14 @@ describe 'binary' do
 
     its(:to_s) { should eq('2 * 4') }
     its(:inspect) { should eq('<2 * 4>') }
+    its(:reduce) { should eq(eight) }
+
+    it '#reduce left' do
+      expect(Multiply.new(subject, seven).reduce.to_s).to eq('8 * 7')
+    end
+
+    it '#reduce right' do
+      expect(Multiply.new(seven, subject).reduce.to_s).to eq('7 * 8')
+    end
   end
 end
