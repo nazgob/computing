@@ -9,20 +9,32 @@ describe Number do
 end
 
 describe 'binary' do
-  let(:left) { Number.new(3) }
-  let(:right) { Number.new(4) }
+  let(:two) { Number.new(2) }
+  let(:four) { Number.new(4) }
+  let(:six) { Number.new(6) }
+  let(:seven) { Number.new(7) }
 
   describe Add do
-    subject { Add.new(left, right) }
+    subject { Add.new(two, four) }
 
-    its(:to_s) { should eq('3 + 4') }
-    its(:inspect) { should eq('<3 + 4>') }
+    its(:to_s) { should eq('2 + 4') }
+    its(:inspect) { should eq('<2 + 4>') }
+    its(:reduce) { should eq(six) }
+
+    it '#reduce left' do
+      expect(Add.new(subject, seven).reduce.to_s).to eq('6 + 7')
+    end
+
+    it '#reduce right' do
+      expect(Add.new(seven, subject).reduce.to_s).to eq('7 + 6')
+    end
+
   end
 
   describe Multiply do
-    subject { Multiply.new(left, right) }
+    subject { Multiply.new(two, four) }
 
-    its(:to_s) { should eq('3 * 4') }
-    its(:inspect) { should eq('<3 * 4>') }
+    its(:to_s) { should eq('2 * 4') }
+    its(:inspect) { should eq('<2 * 4>') }
   end
 end
