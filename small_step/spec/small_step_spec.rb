@@ -1,5 +1,5 @@
 require 'rspec'
-require './small_step'
+require_relative '../small_step'
 
 describe Number do
   subject { Number.new(42) }
