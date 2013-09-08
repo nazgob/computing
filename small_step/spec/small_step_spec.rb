@@ -9,6 +9,7 @@ describe 'SmallStep' do
   let(:eight) { Number.new(8) }
   let(:sixteen) { Number.new(16) }
   let(:yes) { Boolean.new(true) }
+  let(:empty_env) { Hash.new }
 
   describe Number do
     subject { Number.new(42) }
@@ -92,11 +93,21 @@ describe 'SmallStep' do
   end
 
   describe Machine do
-    it 'works' do
+    it 'reduces complex expressions' do
       x = Multiply.new(two, four)
       y = Add.new(six, two)
       z = Add.new(x, y)
-      expect(Machine.new(z).run).to eq(sixteen)
+
+      expect(Machine.new(z, empty_env).run).to eq(sixteen)
+    end
+
+    it 'works with variables' do
+      x = Variable.new(:x)
+      y = Variable.new(:y)
+      z = Multiply.new(x, y)
+      env = { :x => Number.new(2), :y => Number.new(3) }
+
+      expect(Machine.new(z, env).run.to_s).to eq('6')
     end
   end
 

@@ -9,11 +9,11 @@ module BinaryOp
     true
   end
 
-  def reduce
+  def reduce(env = nil)
     if left.reducible?
-      self.class.new(left.reduce, right)
+      self.class.new(left.reduce(env), right)
     elsif right.reducible?
-      self.class.new(left, right.reduce)
+      self.class.new(left, right.reduce(env))
     else
       Number.new(operator(left.value, right.value))
     end
@@ -42,6 +42,23 @@ class Boolean < Struct.new(:value)
 
   def to_s
     value.to_s
+  end
+
+end
+
+class Variable < Struct.new(:name)
+  include Inspectable
+
+  def reducible?
+    true
+  end
+
+  def reduce(env)
+    env[name]
+  end
+
+  def to_s
+    name.to_s
   end
 
 end
@@ -86,11 +103,11 @@ class LessThen < Struct.new(:left, :right)
     true
   end
 
-  def reduce
+  def reduce(env = nil)
     if left.reducible?
-      self.class.new(left.reduce, right)
+      self.class.new(left.reduce(env), right)
     elsif right.reducible?
-      self.class.new(left, right.reduce)
+      self.class.new(left, right.reduce(env))
     else
       Boolean.new(left.value < right.value)
     end
@@ -98,7 +115,7 @@ class LessThen < Struct.new(:left, :right)
 
 end
 
-class Machine < Struct.new(:expression)
+class Machine < Struct.new(:expression, :env)
   def run
     while expression.reducible?
       # puts expression
@@ -109,7 +126,7 @@ class Machine < Struct.new(:expression)
 
   private
   def step
-    self.expression = expression.reduce
+    self.expression = expression.reduce(env)
   end
 
 end
