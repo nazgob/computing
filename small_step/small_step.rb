@@ -75,6 +75,29 @@ class Multiply < Struct.new(:left, :right)
   end
 end
 
+class LessThen < Struct.new(:left, :right)
+  include Inspectable
+
+  def to_s
+    "#{left} < #{right}"
+  end
+
+  def reducible?
+    true
+  end
+
+  def reduce
+    if left.reducible?
+      self.class.new(left.reduce, right)
+    elsif right.reducible?
+      self.class.new(left, right.reduce)
+    else
+      Boolean.new(left.value < right.value)
+    end
+  end
+
+end
+
 class Machine < Struct.new(:expression)
   def run
     while expression.reducible?

@@ -8,6 +8,7 @@ describe 'SmallStep' do
   let(:seven) { Number.new(7) }
   let(:eight) { Number.new(8) }
   let(:sixteen) { Number.new(16) }
+  let(:yes) { Boolean.new(true) }
 
   describe Number do
     subject { Number.new(42) }
@@ -53,6 +54,27 @@ describe 'SmallStep' do
 
       it '#reduce right' do
         expect(Multiply.new(seven, subject).reduce.to_s).to eq('7 * 8')
+      end
+
+      describe LessThen do
+        subject { LessThen.new(two, four) }
+        let(:reducible_operation) { Multiply.new(two, four) }
+
+        its(:to_s) { should eq('2 < 4') }
+        its(:inspect) { should eq('<2 < 4>') }
+        its(:reduce) { should eq(yes) }
+
+        it '#reduce left' do
+          operation = LessThen.new(reducible_operation, seven)
+          expect(operation.reduce.to_s).to eq('8 < 7')
+          expect(operation.reduce.reduce.to_s).to eq('false')
+        end
+
+        it '#reduce right' do
+          operation = LessThen.new(seven, reducible_operation)
+          expect(operation.reduce.to_s).to eq('7 < 8')
+          expect(operation.reduce.reduce.to_s).to eq('true')
+        end
       end
     end
   end
