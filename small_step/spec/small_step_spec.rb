@@ -15,6 +15,7 @@ describe 'SmallStep' do
 
     its(:to_s) { should eq('42') }
     its(:inspect) { should eq('<42>') }
+    its(:reducible?) { should be_false }
   end
 
   describe Boolean do
@@ -22,6 +23,7 @@ describe 'SmallStep' do
 
     its(:to_s) { should eq('true') }
     its(:inspect) { should eq('<true>') }
+    its(:reducible?) { should be_false }
   end
 
   describe 'binary' do
@@ -30,6 +32,7 @@ describe 'SmallStep' do
 
       its(:to_s) { should eq('2 + 4') }
       its(:inspect) { should eq('<2 + 4>') }
+      its(:reducible?) { should be_true }
       its(:reduce) { should eq(six) }
 
       it '#reduce left' do
@@ -46,6 +49,7 @@ describe 'SmallStep' do
 
       its(:to_s) { should eq('2 * 4') }
       its(:inspect) { should eq('<2 * 4>') }
+      its(:reducible?) { should be_true }
       its(:reduce) { should eq(eight) }
 
       it '#reduce left' do
@@ -62,6 +66,7 @@ describe 'SmallStep' do
 
         its(:to_s) { should eq('2 < 4') }
         its(:inspect) { should eq('<2 < 4>') }
+        its(:reducible?) { should be_true }
         its(:reduce) { should eq(yes) }
 
         it '#reduce left' do
