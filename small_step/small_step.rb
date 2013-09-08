@@ -33,6 +33,19 @@ class Number < Struct.new(:value)
 
 end
 
+class Boolean < Struct.new(:value)
+  include Inspectable
+
+  def reducible?
+    false
+  end
+
+  def to_s
+    value.to_s
+  end
+
+end
+
 class Add < Struct.new(:left, :right)
   include Inspectable
   include BinaryOp

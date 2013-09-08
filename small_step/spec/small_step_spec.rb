@@ -16,6 +16,13 @@ describe 'SmallStep' do
     its(:inspect) { should eq('<42>') }
   end
 
+  describe Boolean do
+    subject { Boolean.new(true) }
+
+    its(:to_s) { should eq('true') }
+    its(:inspect) { should eq('<true>') }
+  end
+
   describe 'binary' do
     describe Add do
       subject { Add.new(two, four) }
