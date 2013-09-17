@@ -101,13 +101,32 @@ describe 'SmallStep' do
       expect(Machine.new(z, empty_env).run).to eq(sixteen)
     end
 
-    it 'works with variables' do
+    it 'reduces to do-nothing' do
       x = Variable.new(:x)
-      y = Variable.new(:y)
-      z = Multiply.new(x, y)
-      env = { :x => Number.new(2), :y => Number.new(3) }
+      y = Number.new(1)
+      add = Add.new(x, y)
+      assign = Assign.new(:x, add)
+      env = { :x => Number.new(2) }
 
-      expect(Machine.new(z, env).run.to_s).to eq('6')
+      machine = Machine.new(assign, env)
+      expect(machine.run.to_s).to eq('do-nothing')
+      expect(machine.env.to_s).to eq('{:x=><3>}')
+    end
+
+    it 'works step by step' do
+      x = Variable.new(:x)
+      y = Number.new(1)
+      add = Add.new(x, y)
+      assign = Assign.new(:x, add)
+      env = { :x => Number.new(2) }
+
+      machine = Machine.new(assign, env)
+      first_reduce = machine.send(:step)
+      second_reduce = machine.send(:step)
+      third_reduce = machine.send(:step)
+      expect(first_reduce.to_s).to eq('[<x = 2 + 1>, {:x=><2>}]')
+      expect(second_reduce.to_s).to eq('[<x = 3>, {:x=><2>}]')
+      expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><3>}]')
     end
   end
 

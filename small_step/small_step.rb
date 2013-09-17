@@ -30,7 +30,6 @@ class Number < Struct.new(:value)
   def to_s
     value.to_s
   end
-
 end
 
 class Boolean < Struct.new(:value)
@@ -43,7 +42,6 @@ class Boolean < Struct.new(:value)
   def to_s
     value.to_s
   end
-
 end
 
 class Variable < Struct.new(:name)
@@ -60,7 +58,6 @@ class Variable < Struct.new(:name)
   def to_s
     name.to_s
   end
-
 end
 
 class Add < Struct.new(:left, :right)
@@ -75,7 +72,6 @@ class Add < Struct.new(:left, :right)
   def operator(left, right)
     left + right
   end
-
 end
 
 class Multiply < Struct.new(:left, :right)
@@ -115,18 +111,54 @@ class LessThen < Struct.new(:left, :right)
 
 end
 
-class Machine < Struct.new(:expression, :env)
+class Machine < Struct.new(:statement, :env)
   def run
-    while expression.reducible?
-      # puts expression
+    while statement.reducible?
+      # puts statement
       step
     end
-    expression
+    statement
   end
 
   private
   def step
-    self.expression = expression.reduce(env)
+    self.statement, self.env = statement.reduce(env)
+  end
+end
+
+class DoNothing
+  include Inspectable
+
+  def to_s
+    'do-nothing'
+  end
+
+  def ==(other_statement)
+    other_statement.instance_of?(self.class)
+  end
+
+  def reducible?
+    false
+  end
+end
+
+class Assign < Struct.new(:name, :expression)
+  include Inspectable
+
+  def to_s
+    "#{name} = #{expression}"
+  end
+
+  def reducible?
+    true
+  end
+
+  def reduce(env)
+    if expression.reducible?
+      [Assign.new(name, expression.reduce(env)), env]
+    else
+      [DoNothing.new, env.merge({name => expression})]
+    end
   end
 
 end
