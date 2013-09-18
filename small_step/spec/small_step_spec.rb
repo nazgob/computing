@@ -131,36 +131,54 @@ describe 'SmallStep' do
       expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><3>}]')
     end
 
-    it 'works with if-else' do
-      condition = Variable.new(:x)
-      consequence = Assign.new(:y, Number.new(1))
-      alternative = Assign.new(:y, Number.new(2))
-      env = {:x => Boolean.new(false)}
-      decision = If.new(condition, consequence, alternative)
+    describe 'If-Else' do
+      let(:condition) { Variable.new(:x) }
+      let(:consequence) { Assign.new(:y, Number.new(1)) }
+      let(:alternative) { Assign.new(:y, Number.new(2)) }
+      let(:decision) { If.new(condition, consequence, alternative) }
+      let(:machine) { Machine.new(decision, env) }
 
-      machine = Machine.new(decision, env)
-      first_reduce = machine.send(:step)
-      second_reduce = machine.send(:step)
-      third_reduce = machine.send(:step)
+      context true do
+        let(:env) { {:x => Boolean.new(true)} }
 
-      expect(first_reduce.to_s).to eq('[<if (false) { y = 1 } else { y = 2 }>, {:x=><false>}]')
-      expect(second_reduce.to_s).to eq('[<y = 2>, {:x=><false>}]')
-      expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><false>, :y=><2>}]')
-    end
+        it 'works with if-else' do
+          first_reduce = machine.send(:step)
+          second_reduce = machine.send(:step)
+          third_reduce = machine.send(:step)
 
-    it 'if without else' do
-      condition = Variable.new(:x)
-      consequence = Assign.new(:y, Number.new(1))
-      alternative = DoNothing.new
-      env = {:x => Boolean.new(false)}
-      decision = If.new(condition, consequence, alternative)
+          expect(first_reduce.to_s).to eq('[<if (true) { y = 1 } else { y = 2 }>, {:x=><true>}]')
+          expect(second_reduce.to_s).to eq('[<y = 1>, {:x=><true>}]')
+          expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><true>, :y=><1>}]')
+        end
+      end
 
-      machine = Machine.new(decision, env)
-      first_reduce = machine.send(:step)
-      second_reduce = machine.send(:step)
+      context false do
+        let(:env) { {:x => Boolean.new(false)} }
 
-      expect(first_reduce.to_s).to eq('[<if (false) { y = 1 } else { do-nothing }>, {:x=><false>}]')
-      expect(second_reduce.to_s).to eq('[<do-nothing>, {:x=><false>}]')
+        it 'works with if-else' do
+          first_reduce = machine.send(:step)
+          second_reduce = machine.send(:step)
+          third_reduce = machine.send(:step)
+
+          expect(first_reduce.to_s).to eq('[<if (false) { y = 1 } else { y = 2 }>, {:x=><false>}]')
+          expect(second_reduce.to_s).to eq('[<y = 2>, {:x=><false>}]')
+          expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><false>, :y=><2>}]')
+        end
+
+        it 'if without else' do
+          alternative = DoNothing.new
+          decision = If.new(condition, consequence, alternative)
+
+          machine = Machine.new(decision, env)
+          first_reduce = machine.send(:step)
+          second_reduce = machine.send(:step)
+
+          expect(first_reduce.to_s).to eq('[<if (false) { y = 1 } else { do-nothing }>, {:x=><false>}]')
+          expect(second_reduce.to_s).to eq('[<do-nothing>, {:x=><false>}]')
+        end
+
+      end
+
     end
   end
 
