@@ -94,18 +94,18 @@ describe 'SmallStep' do
 
   describe Machine do
     it 'reduces complex expressions' do
-      x = Multiply.new(two, four)
-      y = Add.new(six, two)
-      z = Add.new(x, y)
+      multiplication = Multiply.new(two, four)
+      addition = Add.new(six, two)
+      result = Add.new(multiplication, addition)
 
-      expect(Machine.new(z, empty_env).run).to eq(sixteen)
+      expect(Machine.new(result, empty_env).run).to eq(sixteen)
     end
 
     it 'reduces to do-nothing' do
       x = Variable.new(:x)
       y = Number.new(1)
-      add = Add.new(x, y)
-      assign = Assign.new(:x, add)
+      addition = Add.new(x, y)
+      assign = Assign.new(:x, addition)
       env = { :x => Number.new(2) }
 
       machine = Machine.new(assign, env)
@@ -117,11 +117,11 @@ describe 'SmallStep' do
     it 'works step by step' do
       x = Variable.new(:x)
       y = Number.new(1)
-      add = Add.new(x, y)
-      assign = Assign.new(:x, add)
+      addition = Add.new(x, y)
+      assignment = Assign.new(:x, addition)
       env = { :x => Number.new(2) }
 
-      machine = Machine.new(assign, env)
+      machine = Machine.new(assignment, env)
       first_reduce = machine.send(:step)
       second_reduce = machine.send(:step)
       third_reduce = machine.send(:step)
