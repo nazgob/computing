@@ -114,9 +114,10 @@ end
 class Machine < Struct.new(:statement, :env)
   def run
     while statement.reducible?
-      # puts statement
+      # puts "#{statement}, #{env}"
       step
     end
+    # puts "#{statement}, #{env}"
     statement
   end
 
@@ -161,4 +162,29 @@ class Assign < Struct.new(:name, :expression)
     end
   end
 
+end
+
+class If < Struct.new(:condition, :consequence, :alternative)
+  include Inspectable
+
+  def to_s
+    "if (#{condition}) { #{consequence} } else { #{alternative} }"
+  end
+
+  def reducible?
+    true
+  end
+
+  def reduce(env)
+    if condition.reducible?
+      [If.new(condition.reduce(env), consequence, alternative), env]
+    else
+      case condition
+      when Boolean.new(true)
+        [consequence, env]
+      when boolean.new(false)
+        [alternative, env]
+      end
+    end
+  end
 end

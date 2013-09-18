@@ -128,6 +128,22 @@ describe 'SmallStep' do
       expect(second_reduce.to_s).to eq('[<x = 3>, {:x=><2>}]')
       expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><3>}]')
     end
+
+    it 'works with if-else' do
+      condition = Variable.new(:x)
+      consequence = Assign.new(:y, Number.new(1))
+      alternative = Assign.new(:y, Number.new(2))
+      env = {:x => Boolean.new(true)}
+      decision = If.new(condition, consequence, alternative)
+
+      machine = Machine.new(decision, env)
+      first_reduce = machine.send(:step)
+      second_reduce = machine.send(:step)
+      third_reduce = machine.send(:step)
+      expect(first_reduce.to_s).to eq('[<if (true) { y = 1 } else { y = 2 }>, {:x=><true>}]')
+      expect(second_reduce.to_s).to eq('[<y = 1>, {:x=><true>}]')
+      expect(third_reduce.to_s).to eq('[<do-nothing>, {:x=><true>, :y=><1>}]')
+    end
   end
 
 end
