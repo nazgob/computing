@@ -182,7 +182,7 @@ class If < Struct.new(:condition, :consequence, :alternative)
       case condition
       when Boolean.new(true)
         [consequence, env]
-      when boolean.new(false)
+      when Boolean.new(false)
         [alternative, env]
       end
     end
